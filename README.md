@@ -99,7 +99,3 @@ isn't typed into the recording.
   anti-cheat online games will ignore posted input by design.
 - Building the `.exe` yourself: `pip install pyinstaller` then
   `python -m PyInstaller kalikot.spec`.
-
-## 👨‍💻 Author
-
-**John Venice Almazan** — [@kalikot26](https://github.com/kalikot26)
