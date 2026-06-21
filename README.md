@@ -1,129 +1,105 @@
-# Simple Macro (action replay)
+# 🎬 kalikot — Macro Recorder & Multi-Macro Player
 
-Records keystrokes, mouse clicks, mouse movement and scrolling with real
-timings, lets you edit the steps (insert waits, trim jitter), and replays them
-with loops + speed control. Everything is stored in a **portable SQLite
-database** (`local.db`) next to the scripts — copy the folder and your macros
-and per-macro play settings come with it.
+**Record your keyboard & mouse, edit the steps, then replay — loop it, speed it,
+run it in the background, or run several macros at once.**
 
-## Setup
+*kalikot* (Tagalog for *tinkering / fiddling with something*) is a Windows
+action-replay tool. It records keystrokes, clicks, mouse movement and scrolling
+with real timings, lets you fine-tune the steps (insert waits, paste blocks of
+text, trim jitter), and replays them with loops, speed control and a live
+loop-delay countdown. Everything is stored in a portable SQLite file, and a
+standalone `.exe` means there's nothing to install on the machines you share it
+with.
 
-**Easiest — no install needed:** just run the standalone **`dist\kalikot.exe`**.
-It bundles Python and all dependencies. (On another PC, run *that* file — not
-`gui.bat` or the `.py` files, which need Python installed.)
+## 🛠️ Built With
+
+- Python 3
+- [pynput](https://pypi.org/project/pynput/) — global keyboard/mouse capture & playback
+- [customtkinter](https://pypi.org/project/customtkinter/) — the GUI
+- SQLite (`sqlite3`, bundled with Python) — portable storage
+- PyInstaller — standalone `.exe` packaging
+- Win32 API (`ctypes`) — window targeting, activation & clipboard
+
+## ✨ Features
+
+- 🎥 **Record** keystrokes, clicks, mouse moves & scroll with real timings — or
+  **keyboard-only** to leave the mouse out.
+- ✏️ **Step editor** — insert **waits**, add **📋 paste-script** steps (a saved
+  block of text pasted via Ctrl+V), delete events, or strip mouse jitter.
+- 🔁 **Loops** (count or forever), **speed** control, and a **loop-delay
+  countdown** so you know when the next run fires.
+- 🪟 **Multi-app playback**
+  - *Watch it run* — foreground replay that follows whatever window each action
+    lands on, across several apps.
+  - *Background mode* — hands-free; routes each action to the window under it, or
+    **lock to one specific window**.
+- 🧩 **Run several macros at once** — each saved macro has its own settings and
+  Play/Stop state. They cooperatively time-share the one keyboard/mouse, and a
+  **RUNNING** panel shows each one's live state (running / next-loop countdown /
+  waiting), with a recommended loop delay to help them interleave.
+- ⌨️ **Configurable global hotkeys** (default **F9** record, **F8** play) that
+  work even when the window is unfocused — each person can rebind their own.
+- 💾 **Portable** — macros and per-macro settings live in a single `local.db`;
+  the standalone `dist\kalikot.exe` needs no Python.
+
+## 🔧 Setup
+
+**Easiest — no install needed:** run the standalone **`dist\kalikot.exe`**.
+It bundles Python and every dependency. On another PC, run *that* file (not
+`gui.bat` or the `.py` files, which need Python installed).
 
 **To run from source** (Python 3 required), install the dependencies once:
 
-```
-install.bat          (double-click — installs everything via pip)
-```
-
-or manually:
-
-```
+```bash
+install.bat          # double-click — installs everything via pip
+# or:
 pip install -r requirements.txt
 ```
 
-That installs `pynput` + `customtkinter`. `sqlite3` ships with Python, so
-there's nothing else to install. To build the `.exe` yourself, also
-`pip install pyinstaller` and run `python -m PyInstaller kalikot.spec`.
+Then launch:
 
-## GUI (recommended)
-
-Double-click **`gui.bat`**, or run:
-
-```
-python macro_gui.py
+```bash
+python macro_gui.py   # or double-click gui.bat
 ```
 
-- Pick a saved macro from the **dropdown**, or leave it on **+ New recording**.
-- Type a **name**, hit **Record** (or **F9**), do your thing, then **F9** again.
-- **Edit** opens the step editor: insert **waits** anywhere, add **📋 paste-script**
-  steps (a saved block of text pasted via Ctrl+V on playback), delete events,
-  or **Remove all moves** to drop mouse jitter.
-- **Save** writes the macro + its Loops/Speed/Delay settings into `local.db`.
-- **Track windows** (Record card) — records *which window* each click lands in.
-  Turn this on when your task spans **several apps**; on replay each click's window
-  is brought to the front first, so it runs across all of them where you can watch.
-  (Found by window title/class, so it still works if the window moved.)
-- Set **Loops** (0 = forever), **Speed**, **Loop delay**, then **Play** (or **F8**).
-  A loop delay shows a live **countdown** so you know when the next run fires.
-- **Background mode (hands-free)** — replays without taking over your cursor/keyboard.
-  By default it **routes each action to its recorded window** (multi-app); tick
-  **Lock to one specific window** to confine it to a single app you pick.
-  (Anti-cheat online games ignore posted input.)
-- Your play settings and checkboxes are **remembered** between runs (stored in
-  `local.db`), and **each saved macro keeps its own** loops/speed/delay/options.
+## 🚀 Usage
 
-## Running several macros at once
+1. Type a **name**, tick **Keyboard only** if you don't want the mouse recorded,
+   then **Record** (or press **F9**). Press **F9** again to stop.
+2. Hit **Edit** to insert waits, paste-script steps, or trim mouse moves.
+3. Set **Loops** (0 = forever), **Speed**, **Loop delay**, then **Play**
+   (or press **F8**). Stop with the button or **F8**.
+4. To run more than one macro, save each, then Play them — switch the selector to
+   manage each independently while the others keep running.
 
-Each saved macro plays independently — start one, switch the selector to another,
-and the first keeps going. A **RUNNING** panel lists every active macro with its
-live state (▶ running / ⏳ next-loop countdown / ⌛ waiting) and a stop button each.
+### Command line
 
-Because there's only one real mouse/keyboard, macros **time-share**: while one is
-in its loop delay, another may run — but only if it fits inside that remaining
-delay (plus a small buffer), so nothing gets knocked off schedule. A macro that
-can't fit yet shows **waiting for slot** until a gap opens (no loops are skipped).
-
-Set each macro's **loop delay** long enough to leave room for the others. Click
-the **recommended loop delay** hint under the loop fields to auto-fill a value
-that fits the macros currently running.
-- Playback **keeps running while you move the mouse or type** — it stops only via
-  the **Stop** button or the global **F8** hotkey.
-- **Delete** removes the selected macro. Light/dark toggle top-right (remembered).
-
-## Use it (command line)
-
-```
-python macro.py record mymacro      # record, press F9 to stop
+```bash
+python macro.py record mymacro      # record, F9 to stop
 python macro.py play   mymacro      # replay once
-python macro.py list                # see all macros
-python macro.py show   mymacro      # print the raw JSON
-python macro.py delete mymacro      # remove a saved macro
+python macro.py list                # list saved macros
+python macro.py show   mymacro      # print a macro's JSON
+python macro.py delete mymacro      # delete a saved macro
 ```
 
-### Play options
-```
---loops N        repeat N times (0 = forever)
---speed X        2 = twice as fast, 0.5 = half speed
---loop-delay S   seconds to pause between loops
---no-move        ignore recorded mouse movement (clicks still land)
---countdown N    seconds before it starts (default 3)
-```
-Example: `python macro.py play mymacro --loops 10 --speed 1.5 --loop-delay 2`
+## ⌨️ Hotkeys
 
-## Or just double-click
-- `record.bat mymacro`  -> records
-- `play.bat mymacro --loops 5`  -> replays
+| Key | Action |
+|-----|--------|
+| **F9** | Start / stop recording *(rebindable)* |
+| **F8** | Start / stop playback of the selected macro *(rebindable)* |
 
-## Hotkeys (GUI — global, work even when unfocused)
-- **F9** — start / stop recording *(default)*
-- **F8** — start / stop playback *(default)*
+Click **⌨ Hotkeys** in the app to rebind them — stick to **F1–F12** so the key
+isn't typed into the recording.
 
-Click **⌨ Hotkeys** (top of the window) to rebind either one — press the key you
-want and Save. Your choice is stored in `local.db`, so each person can set their
-own. Tip: stick to **F1–F12**; other keys get typed into the recording.
+## 📝 Notes
 
-CLI: **F9** stops recording; **F8**/**F10** stop playback.
+- For games/apps that block synthetic input (**anti-cheat**), playback and global
+  hotkeys may not register — try **Run as administrator**, and note that
+  anti-cheat online games will ignore posted input by design.
+- Building the `.exe` yourself: `pip install pyinstaller` then
+  `python -m PyInstaller kalikot.spec`.
 
-Note: ordinary user mouse/keyboard activity does **not** stop playback — only the
-Stop button or the Stop hotkey does.
+## 👨‍💻 Author
 
-## Editing macros
-Use the **Edit** button in the GUI to insert waits, delete steps, and trim mouse
-moves. The data lives in `local.db` (SQLite); each event has a `t` (seconds from
-start) and a type.
-
-Event types: `key_press`, `key_release`, `move`, `click`, `scroll`, and `wait`
-(an explicit pause of `d` seconds, scaled by the Speed setting on playback).
-
-The legacy `macros\*.json` files are imported into `local.db` automatically on
-first run; after that the database is the source of truth.
-
-## Notes
-- For macros that target other apps (games, etc.), run from a terminal started
-  **as Administrator** if keystrokes don't register — some apps block input from
-  non-elevated processes.
-- Mouse movement is sampled ~every 15ms to keep files small; tweak
-  `MOVE_SAMPLE_S` in `macro.py` if you want finer/coarser capture.
+**John Venice Almazan** — [@kalikot26](https://github.com/kalikot26)
