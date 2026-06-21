@@ -1,0 +1,7 @@
+# Runtime dependencies for the kalikot macro app (needed to run the source).
+# The standalone dist\kalikot.exe already bundles these — no install needed there.
+pynput>=1.8.2
+customtkinter>=5.2.2
+
+# Only needed if you want to BUILD the .exe yourself (optional):
+# pyinstaller>=6.20.0

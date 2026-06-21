@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.pyc
+
+# PyInstaller intermediate build (the final exe in dist/ is kept)
+build/
+
+# Local runtime data (per-machine, not for the repo)
+local.db
+kalikot.log
+macros/
